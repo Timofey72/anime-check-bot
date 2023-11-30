@@ -7,7 +7,7 @@ from asyncpg.pool import Pool
 from data import config
 
 
-class Anime:
+class Subscription:
     def __init__(self):
         self.poll: Union[Pool, None] = None
 
@@ -51,25 +51,31 @@ class Anime:
         ])
         return sql, tuple(parameters.values())
 
-    async def add_anime(self, title, link, last_episode):
-        sql = 'INSERT INTO anime (title, link, last_episode) VALUES($1, $2, $3) returning *'
-        return await self.execute(sql, title, link, last_episode, fetchrow=True)
+    async def add_subscription(self, user_id, anime_title):
+        sql = '''
+            INSERT INTO subscriptions (user_id, anime_title)
+            VALUES (
+                (SELECT id FROM users WHERE id=$1),
+                (SELECT title FROM anime WHERE title=$2)
+            )
+            RETURNING *;
+        '''
+        return await self.execute(sql, user_id, anime_title, fetchrow=True)
 
-    async def update_anime(self, title, **kwargs):
-        sql = 'UPDATE anime SET '
-        sql, parameters = self.format_update(sql, parameters=kwargs)
-        sql += f' WHERE title={title}'
-        return await self.execute(sql, *parameters, execute=True)
-
-    async def select_all_anime(self):
-        sql = 'SELECT * FROM anime'
+    async def select_all_subscriptions(self, user_id):
+        sql = f'SELECT * FROM subscriptions WHERE user_id = {user_id}'
         return await self.execute(sql, fetch=True)
 
-    async def select_anime(self, **kwargs):
-        sql = 'SELECT * FROM anime WHERE '
+    async def select_subscription(self, **kwargs):
+        sql = 'SELECT * FROM subscriptions WHERE '
         sql, parameters = self.format_args(sql, parameters=kwargs)
         return await self.execute(sql, *parameters, fetchrow=True)
 
-    async def count_anime(self):
-        sql = 'SELECT COUNT(*) FROM anime'
+    async def delete_subscription(self, **kwargs):
+        sql = f'DELETE FROM subscriptions WHERE '
+        sql, parameters = self.format_args(sql, parameters=kwargs)
+        return await self.execute(sql, *parameters, fetchrow=True)
+
+    async def count_subscriptions(self, user_id):
+        sql = f'SELECT COUNT(*) FROM subscriptions WHERE user_id = {user_id}'
         return await self.execute(sql, fetchval=True)

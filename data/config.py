@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = str(os.getenv('BOT_TOKEN'))
+MODE = str(os.getenv('MODE'))  # development or production
 ADMINS = str(os.getenv('ADMINS')).split(',')
 
 DB_USER = str(os.getenv('DB_USER'))

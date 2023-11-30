@@ -28,7 +28,7 @@ class Database:
             return result
 
     async def create_tables(self):
-        sql = """
+        sql = '''
         CREATE TABLE IF NOT EXISTS anime (
             id SERIAL PRIMARY KEY,
             title VARCHAR(100) UNIQUE,
@@ -44,5 +44,5 @@ class Database:
             user_id INTEGER REFERENCES users(id),
             anime_title VARCHAR REFERENCES anime(title)
         );
-        """
+        '''
         await self.execute(sql)

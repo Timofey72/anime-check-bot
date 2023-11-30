@@ -34,14 +34,14 @@ class User:
 
     @staticmethod
     def format_args(sql, parameters: dict):
-        sql += " AND ".join([
-            f"{item} = ${num}" for num, item in enumerate(parameters.keys(),
+        sql += ' AND '.join([
+            f'{item} = ${num}' for num, item in enumerate(parameters.keys(),
                                                           start=1)
         ])
         return sql, tuple(parameters.values())
 
     async def add_user(self, telegram_id, username):
-        sql = "INSERT INTO users (id, username) VALUES($1, $2) returning *"
+        sql = 'INSERT INTO users (id, username) VALUES($1, $2) returning *'
         return await self.execute(sql, telegram_id, username, fetchrow=True)
 
     async def select_all_users(self):
