@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, types
 
 import messages
+from utils.database.anime import Anime
 from utils.database.user import User
 
 
@@ -15,5 +16,14 @@ async def start(message: types.Message):
     return await message.answer(messages.GREETING)
 
 
+async def anime(message: types.Message):
+    anime_all = await Anime().select_all_anime()
+    msg = ''
+    for index, item in enumerate(anime_all):
+        msg += f'{index + 1}. {item.get("title")} - <a href="{item.get("link")}">смотреть</a>\n'
+    return await message.answer(msg, parse_mode='HTML')
+
+
 def register_start(dp: Dispatcher):
     dp.register_message_handler(start, commands=['start'])
+    dp.register_message_handler(anime, commands=['anime'])

@@ -12,7 +12,7 @@ from data.config import MODE
 
 # logging settings
 log_path = "logs/bot.log"
-logging.basicConfig(filename=log_path, level=logging.INFO, filemode='w')
+logging.basicConfig(filename=log_path, level=logging.INFO, filemode='a')
 
 
 class MyHandler(FileSystemEventHandler):
