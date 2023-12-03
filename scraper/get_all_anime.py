@@ -1,4 +1,5 @@
 import bs4
+import json
 import requests
 
 from typing import NamedTuple, List
@@ -40,9 +41,17 @@ def parse_anime_data(anime: bs4.element.Tag) -> AnimeData:
 def main() -> List[AnimeData]:
     anime = get_all_anime()
     result = []
+    json_result = {'data': []}
     for one_anime in anime:
         data = parse_anime_data(one_anime)
         result.append(data)
+        json_result['data'].append({
+            'title': data.title,
+            'link': data.link
+        })
+
+    with open('scraper/anime_data.json', 'w', encoding='utf-8') as f:
+        json.dump(json_result, f, indent=2, ensure_ascii=False)
 
     return result
 

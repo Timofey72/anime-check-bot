@@ -4,10 +4,9 @@ import asyncpg
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from data.config import bot, ADMINS
+from data.config import bot, ADMINS, anime_db
 from scraper import get_new_episodes
 from scraper import get_all_anime
-from utils.database.anime import Anime
 
 
 async def check_new_episodes():
@@ -25,7 +24,7 @@ async def check_new_episodes():
 async def check_ongoing_anime():
     all_anime = get_all_anime.main()
     try:
-        await Anime().add_many_anime(all_anime)
+        await anime_db.add_many_anime(all_anime)
     except asyncpg.exceptions.PostgresSyntaxError as ex:
         print(ex)
 

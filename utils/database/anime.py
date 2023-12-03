@@ -10,10 +10,10 @@ from scraper.get_all_anime import AnimeData
 
 class Anime:
     def __init__(self):
-        self.poll: Union[Pool, None] = None
+        self.pool: Union[Pool, None] = None
 
     async def create(self):
-        self.poll = await asyncpg.create_pool(
+        self.pool = await asyncpg.create_pool(
             user=config.DB_USER,
             password=config.DB_PASSWORD,
             host=config.DB_HOST,
@@ -22,8 +22,7 @@ class Anime:
 
     async def execute(self, command, *args, fetch: bool = False, fetchval: bool = False, fetchrow: bool = False,
                       execute: bool = False):
-        await self.create()
-        async with self.poll.acquire() as connection:
+        async with self.pool.acquire() as connection:
             connection: Connection
             async with connection.transaction():
                 if fetch:
@@ -80,6 +79,10 @@ class Anime:
     async def add_many_anime(self, args):
         sql = '''INSERT INTO anime (title, link) VALUES '''
         sql += self.format_args_for_insert(args)
+        return await self.execute(sql, fetchrow=True)
+
+    async def select__startswith_title(self, title):
+        sql = f"SELECT * FROM anime WHERE title LIKE '{title}%';"
         return await self.execute(sql, fetchrow=True)
 
     async def count_anime(self):

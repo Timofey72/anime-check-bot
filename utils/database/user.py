@@ -9,19 +9,18 @@ from data import config
 
 class User:
     def __init__(self):
-        self.poll: Union[Pool, None] = None
+        self.pool: Union[Pool, None] = None
 
     async def create(self):
-        self.poll = await asyncpg.create_pool(
+        self.pool = await asyncpg.create_pool(
             user=config.DB_USER,
             password=config.DB_PASSWORD,
             host=config.DB_HOST,
-            database=config.DB_NAME
+            database=config.DB_NAME,
         )
 
     async def execute(self, command, *args, fetch: bool = False, fetchrow: bool = False, execute: bool = False):
-        await self.create()
-        async with self.poll.acquire() as connection:
+        async with self.pool.acquire() as connection:
             connection: Connection
             async with connection.transaction():
                 if fetch:

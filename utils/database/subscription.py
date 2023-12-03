@@ -9,10 +9,10 @@ from data import config
 
 class Subscription:
     def __init__(self):
-        self.poll: Union[Pool, None] = None
+        self.pool: Union[Pool, None] = None
 
     async def create(self):
-        self.poll = await asyncpg.create_pool(
+        self.pool = await asyncpg.create_pool(
             user=config.DB_USER,
             password=config.DB_PASSWORD,
             host=config.DB_HOST,
@@ -21,8 +21,7 @@ class Subscription:
 
     async def execute(self, command, *args, fetch: bool = False, fetchval: bool = False, fetchrow: bool = False,
                       execute: bool = False):
-        await self.create()
-        async with self.poll.acquire() as connection:
+        async with self.pool.acquire() as connection:
             connection: Connection
             async with connection.transaction():
                 if fetch:
@@ -42,6 +41,14 @@ class Subscription:
                                                           start=1)
         ])
         return sql, tuple(parameters.values())
+
+    @staticmethod
+    def format_args_for_insert(user_id: int, anime_title: list):
+        sql = (', '.join(
+            [f"((SELECT id FROM users WHERE id={user_id}), (SELECT title FROM anime WHERE title='{title}'))" for title
+             in
+             anime_title]) + ' ON CONFLICT (user_id, anime_title) DO NOTHING;')
+        return sql
 
     @staticmethod
     def format_update(sql, parameters: dict):
@@ -75,6 +82,11 @@ class Subscription:
         sql = f'DELETE FROM subscriptions WHERE '
         sql, parameters = self.format_args(sql, parameters=kwargs)
         return await self.execute(sql, *parameters, fetchrow=True)
+
+    async def add_many_subscriptions(self, user_id: int, anime_title: list):
+        sql = '''INSERT INTO subscriptions (user_id, anime_title) VALUES '''
+        sql += self.format_args_for_insert(user_id, anime_title)
+        return await self.execute(sql, fetchrow=True)
 
     async def count_subscriptions(self, user_id):
         sql = f'SELECT COUNT(*) FROM subscriptions WHERE user_id = {user_id}'
