@@ -8,6 +8,7 @@ from data.config import bot, user_db, subscriptions_db
 from keyboards.anime_keyboard import anime_keyboard
 from keyboards.main_keyboard import main_markup
 from keyboards.subscription_keyboard import subscription_keyboard
+from scraper import get_random_anime
 from utils.check_startswith import check_startswith, get_all_anime
 
 
@@ -36,7 +37,11 @@ async def process_callback(callback_query: types.CallbackQuery):
     elif button_data == 'anime_list':
         await show_anime_list(chat_id, callback_query.message.message_id)
     elif button_data == 'what_to_watch':
-        await bot.edit_message_text('Посмотрите аниме', chat_id, callback_query.message.message_id)
+        await bot.edit_message_text(messages.FIND_ANIME, chat_id, callback_query.message.message_id, parse_mode='HTML')
+        title, rating, link, image_url = get_random_anime.main()
+        message = messages.RANDOM_ANIME % (title, link, rating)
+        await bot.delete_message(chat_id, callback_query.message.message_id)
+        await callback_query.message.answer_photo(image_url, caption=message, parse_mode='HTML')
 
 
 async def show_subscriptions(callback_query: types.CallbackQuery, page=1):
