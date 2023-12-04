@@ -52,7 +52,7 @@ async def show_subscriptions(callback_query: types.CallbackQuery, page=1):
     subscriptions = await subscriptions_db.select_all_subscriptions(user_id=user_id)
     if not subscriptions:
         return await bot.edit_message_text('У вас нет еще не одной активной подписки.', chat_id, message_id)
-    markup = await subscription_keyboard(subscriptions, user_id=user_id, page=page)
+    markup = await subscription_keyboard(subscriptions, page=page)
     await bot.edit_message_text('Ваши активные подписки:', chat_id, message_id, reply_markup=markup)
 
 

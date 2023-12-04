@@ -3,9 +3,12 @@ from typing import Union, List
 import asyncpg
 from asyncpg import Connection
 from asyncpg.pool import Pool
+from dotenv import load_dotenv
 
 from data import config
 from scraper.get_all_anime import AnimeData
+
+load_dotenv()
 
 
 class Anime:

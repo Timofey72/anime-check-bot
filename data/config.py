@@ -1,4 +1,3 @@
-import asyncio
 import os
 
 from aiogram import Bot
@@ -25,9 +24,13 @@ user_db = User()
 subscriptions_db = Subscription()
 anime_db = Anime()
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(user_db.create())
-loop.run_until_complete(subscriptions_db.create())
-loop.run_until_complete(anime_db.create())
+
+async def setup_databases():
+    await db.create()
+    await db.create_tables()
+    await user_db.create()
+    await subscriptions_db.create()
+    await anime_db.create()
+
 
 bot = Bot(token=BOT_TOKEN)

@@ -4,7 +4,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from data.config import subscriptions_db
 
 
-async def subscription_keyboard(subscriptions: list, user_id: int, subscriptions_per_row: int = 2, page: int = 1,
+async def   subscription_keyboard(subscriptions: list, subscriptions_per_row: int = 2, page: int = 1,
                                 offset: int = 6) -> InlineKeyboardMarkup:
     subscriptions_list = [sub.get('anime_title') for sub in subscriptions]
     total_pages = ceil(len(subscriptions_list) / offset)

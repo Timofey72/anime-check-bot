@@ -1,6 +1,15 @@
 version: '3.1'
 
 services:
+  tgbot:
+    container_name: bot
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - ".env.prod"
   db:
     container_name: database
     image: postgres
@@ -15,25 +24,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  tgbot:
-    container_name: bot
-    build:
-      context: .
-    command: python app.py
-    restart: always
-    depends_on:
-      - db
-    env_file:
-      - ".env.prod"
-  schedule:
-    container_name: schedule
-    build:
-      context: .
-    command: python schedule.py
-    depends_on:
-      - db
-      - tgbot
-    env_file:
-      - ".env.prod"
+
 volumes:
   postgres_data:
