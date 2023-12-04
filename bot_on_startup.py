@@ -18,7 +18,7 @@ async def check_ongoing_anime(db):
     while True:
         all_anime = get_all_anime.main()
         await db.add_many_anime(all_anime)
-        await asyncio.sleep(60)
+        await asyncio.sleep(86400)
 
 
 async def check_new_episodes(anime_database, subs_database):
@@ -44,7 +44,7 @@ async def check_new_episodes(anime_database, subs_database):
                         await bot.send_message(user_id, message, parse_mode='HTML')
 
             await asyncio.sleep(5)
-        await asyncio.sleep(60)
+        await asyncio.sleep(600)
 
 
 async def on_startup(dispatcher):
