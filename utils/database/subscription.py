@@ -76,7 +76,7 @@ class Subscription:
     async def select_subscription(self, **kwargs):
         sql = 'SELECT * FROM subscriptions WHERE '
         sql, parameters = self.format_args(sql, parameters=kwargs)
-        return await self.execute(sql, *parameters, fetchrow=True)
+        return await self.execute(sql, *parameters, fetch=True)
 
     async def delete_subscription(self, **kwargs):
         sql = f'DELETE FROM subscriptions WHERE '

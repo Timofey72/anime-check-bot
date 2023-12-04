@@ -67,7 +67,7 @@ class Anime:
     async def update_anime(self, title, **kwargs):
         sql = 'UPDATE anime SET '
         sql, parameters = self.format_update(sql, parameters=kwargs)
-        sql += f' WHERE title={title}'
+        sql += f" WHERE title='{title}'"
         return await self.execute(sql, *parameters, execute=True)
 
     async def select_all_anime(self):

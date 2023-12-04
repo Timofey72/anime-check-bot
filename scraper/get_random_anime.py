@@ -28,7 +28,11 @@ def get_random_anime() -> (BeautifulSoup, str):
 
 def parse_anime_data(anime: bs4.element.Tag, link: str) -> AnimeEpisodeData:
     title = anime.find('h1').text
-    rating = anime.find('span', class_='rating-value').text
+    rating = anime.find('span', class_='rating-value')
+    if rating is None:
+        rating = 0
+    else:
+        rating = rating.text
     image_url = anime.find('div', class_='anime-poster').find('img').get('src')
 
     return AnimeEpisodeData(title, rating, link, image_url)
