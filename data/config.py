@@ -19,6 +19,8 @@ DB_PASSWORD = str(os.getenv('DB_PASSWORD'))
 DB_HOST = str(os.getenv('DB_HOST'))
 DB_NAME = str(os.getenv('DB_NAME'))
 
+CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
+
 db = Database()
 user_db = User()
 subscriptions_db = Subscription()

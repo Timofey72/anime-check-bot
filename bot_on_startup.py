@@ -32,10 +32,8 @@ async def check_new_episodes(anime_database, subs_database):
             if find_anime:
                 send_message: bool = False
 
-                if find_anime.get('last_episode') is None:
-                    await anime_database.update_anime(title=anime.title, last_episode=episode)
-                    send_message = True
-                elif find_anime.get('last_episode') != episode:
+                if find_anime.get('last_episode') is None or find_anime.get('last_episode') != episode:
+                    await anime_database.update_anime(title=anime_title, last_episode=episode)
                     send_message = True
 
                 if send_message:

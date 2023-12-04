@@ -35,12 +35,12 @@ CREATE TABLE IF NOT EXISTS anime (
     last_episode INTEGER
 );
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     username VARCHAR(50)
 );
 CREATE TABLE IF NOT EXISTS subscriptions (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id BIGINT REFERENCES users(id),
     anime_title VARCHAR REFERENCES anime(title)
 );
 DO $$ 

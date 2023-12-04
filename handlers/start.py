@@ -4,12 +4,14 @@ from aiogram import Dispatcher, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 import messages
-from data.config import bot, user_db, subscriptions_db
+from data.config import bot, user_db, subscriptions_db, CHANNEL_ID
 from keyboards.anime_keyboard import anime_keyboard
+from keyboards.check_keyboard import get_check_keyboard
 from keyboards.main_keyboard import main_markup
 from keyboards.subscription_keyboard import subscription_keyboard
 from scraper import get_random_anime
 from utils.check_startswith import check_startswith, get_all_anime
+from utils.check_subscribe_on_channel import check_subscription
 
 
 async def create_user_if_not_exists(telegram_id, username):
@@ -112,16 +114,23 @@ async def show_anime(callback_query: types.CallbackQuery):
 async def process_subscribe(callback_query: types.CallbackQuery):
     chat_id = callback_query.message.chat.id
     message_id = callback_query.message.message_id
+    user_id = callback_query.from_user.id
+
+    if not await check_subscription(user_id):
+        chat = await bot.get_chat(chat_id=CHANNEL_ID)
+        invite_link = await chat.export_invite_link()
+        markup = get_check_keyboard(invite_link)
+        return await bot.edit_message_text(messages.NOT_SUBSCRIBED, chat_id, message_id, reply_markup=markup)
 
     if callback_query.data == 'subscribe_all_anime':
         all_anime = get_all_anime()
         anime_titles = [anime.get('title') for anime in all_anime]
-        await subscriptions_db.add_many_subscriptions(callback_query.from_user.id, anime_titles)
+        await subscriptions_db.add_many_subscriptions(user_id, anime_titles)
         return await bot.edit_message_text('Вы успешно подписались на все аниме!', chat_id, message_id)
 
     data = callback_query.data.replace('subscribe_', '')
     anime = check_startswith(data).get('title')
-    await subscriptions_db.add_many_subscriptions(callback_query.from_user.id, [anime])
+    await subscriptions_db.add_many_subscriptions(user_id, [anime])
 
     message = 'Успешно! Теперь Вам будут приходить уведомления при выходе новых серий.'
     return await bot.edit_message_text(message, chat_id, message_id)
