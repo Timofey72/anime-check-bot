@@ -3,6 +3,7 @@ version: '3.1'
 services:
   tgbot:
     container_name: bot
+    command: python app.py
     build:
       context: .
     restart: always
@@ -12,7 +13,7 @@ services:
       - ".env.prod"
   db:
     container_name: database
-    image: postgres
+    image: postgres:latest
     restart: always
     ports:
       - "5432:5432"

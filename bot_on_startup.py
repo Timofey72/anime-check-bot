@@ -32,7 +32,8 @@ async def check_new_episodes(anime_database, subs_database):
             if find_anime:
                 send_message: bool = False
 
-                if find_anime.get('last_episode') is None or find_anime.get('last_episode') != episode:
+                last_episode = find_anime.get('last_episode')
+                if last_episode is None or (last_episode != episode and last_episode < episode):
                     await anime_database.update_anime(title=anime_title, last_episode=episode)
                     send_message = True
 
@@ -43,8 +44,8 @@ async def check_new_episodes(anime_database, subs_database):
                         message = messages.NEW_EPISODE % (episode, anime_title, anime.link)
                         await bot.send_message(user_id, message, parse_mode='HTML')
 
-            await asyncio.sleep(5)
-        await asyncio.sleep(600)
+            await asyncio.sleep(20)
+        await asyncio.sleep(300)
 
 
 async def on_startup(dispatcher):
